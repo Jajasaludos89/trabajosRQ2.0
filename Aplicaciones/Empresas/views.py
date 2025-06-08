@@ -84,6 +84,8 @@ def procesarEdicionCargo(request):
 
 ###MENSAJE###
 
+###MENSAJE###
+
 # Mostrar listado de mensajes
 def listarMensajes(request):
     mensajes = Mensaje.objects.all()
@@ -149,13 +151,9 @@ def procesarEdicionMensaje(request):
     messages.success(request, "Mensaje ACTUALIZADO exitosamente")
     return redirect('/listarMensajes')
 
-
+# Enviar mensaje por correo
 def enviarMensaje(request, id):
-    try:
-        mensaje = Mensaje.objects.get(id=id)
-    except Mensaje.DoesNotExist:
-        messages.error(request, "El mensaje no existe")
-        return redirect('/listarMensajes')
+    mensaje = get_object_or_404(Mensaje, id=id)
 
     email = EmailMessage(
         subject=mensaje.asunto,
@@ -164,24 +162,13 @@ def enviarMensaje(request, id):
         to=[mensaje.destinatario],
     )
 
-    # Activar contenido HTML si se desea (opcional)
-    email.content_subtype = "html"
-
-    # Adjuntar archivo si existe
     if mensaje.archivo:
-        file_path = mensaje.archivo.path
-        if os.path.isfile(file_path):
-            file_type, _ = mimetypes.guess_type(file_path)
-            with open(file_path, 'rb') as f:
-                email.attach(mensaje.archivo.name, f.read(), file_type or 'application/octet-stream')
+        file_type, _ = mimetypes.guess_type(mensaje.archivo.name)
+        with open(mensaje.archivo.path, 'rb') as f:
+            email.attach(mensaje.archivo.name, f.read(), file_type)
 
-    try:
-        email.send(fail_silently=False)
-        messages.success(request, "Mensaje ENVIADO exitosamente")
-    except Exception as e:
-        messages.error(request, f"No se pudo enviar el mensaje: {e}")
-
+    email.send(fail_silently=False)
+    messages.success(request, "Mensaje ENVIADO exitosamente")
     return redirect('/listarMensajes')
-
 
 
