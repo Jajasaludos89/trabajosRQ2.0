@@ -84,8 +84,6 @@ def procesarEdicionCargo(request):
 
 ###MENSAJE###
 
-###MENSAJE###
-
 # Mostrar listado de mensajes
 def listarMensajes(request):
     mensajes = Mensaje.objects.all()
