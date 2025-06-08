@@ -1,0 +1,138 @@
+{% extends './plantilla.html' %}
+{% block contenido %}
+
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6 bg-light">
+        <h1>Editar Cargo</h1>
+        <form action="/procesarEdicionCargo/" id="frm_editar_cargo" method="post" enctype="multipart/form-data"> 
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{ cargoEditar.id }}">
+            
+            <label for="">Nombre:</label><br>
+            <input class="form-control" type="text" name="nombre" id="nombre" value="{{ cargoEditar.nombre }}"> <br><br>
+            
+            <label for="">Funciones:</label><br>
+            <input class="form-control" type="text" name="funciones" id="funciones" value="{{ cargoEditar.funciones }}"> <br><br>
+            
+            <label for="">Horario:</label><br>
+            <input class="form-control" type="text" name="horario" id="horario" value="{{ cargoEditar.horario }}"> <br><br>
+            
+            <label for="">Requisitos:</label><br>
+            <textarea class="form-control" name="requisitos" id="requisitos" rows="5">{{ cargoEditar.requisitos }}</textarea> <br><br>
+            
+            <label for="">Sueldo:</label><br>
+            <input class="form-control" type="text" name="sueldo" id="sueldo" value="{{ cargoEditar.sueldo }}"> <br><br>
+            
+            <label for="">Logotipo:</label><br>
+            <input type="file" name="logo" id="logo" class="form-control"> <br>
+            {% if cargoEditar.logo %}
+                <img src="{{ cargoEditar.logo.url }}" alt="Logo actual" width="100px" height="100px">
+            {% else %}
+                Ninguna
+            {% endif %}
+            <br><br>
+            
+            <label for="">Curriculum:</label><br>
+            <input type="file" name="archivo" id="archivo" class="form-control" accept=".pdf"> <br>
+            {% if cargoEditar.archivo %}
+                <a href="{{ cargoEditar.archivo.url }}" target="_blank" class="btn btn-sm btn-success">Ver PDF</a>
+            {% else %}
+                Ninguno
+            {% endif %}
+            <br><br>
+
+            <button class="btn btn-warning" type="submit">
+                <i class="fa fa-pen"></i> Editar
+            </button>
+
+            <a class="btn btn-outline-danger" href="/">
+                <i class="fa fa-times"></i> Cancelar
+            </a>
+        </form>
+        <br>
+    </div>
+    <div class="col-md-3"></div>
+</div>
+
+<script>
+    $("#frm_editar_cargo").validate({
+        rules:{
+            "nombre":{
+                required:true,
+                minlength:5,
+                maxlength:20
+            },
+            "funciones":{
+                required:true
+            },
+            "horario":{
+                required:true
+            },
+            "requisitos":{
+                required:true
+            },
+            "sueldo":{
+                required:true,
+                number:true,
+                min: 200,
+                max: 5000
+            },
+            "archivo": {
+                extension: ".pdf"
+            }
+        },
+        messages:{
+            "nombre":{
+                required:"Este campo es obligatorio",
+                minlength:"Ingrese al menos 5 letras",
+                maxlength:"Ingrese menos de 20 letras"
+            },
+            "funciones":{
+                required:"Este campo es obligatorio"
+            },
+            "horario":{
+                required:"Este campo es obligatorio"
+            },
+            "requisitos":{
+                required:"Este campo es obligatorio"
+            },
+            "sueldo":{
+                required:"Este campo es obligatorio",
+                number:"Debe ser un número",
+                min:"Ingresar mínimo más de 200 $",
+                max:"Ingresar máximo 5000 $"
+            },
+            "archivo": {
+                extension:"Solo se permite archivo .pdf"
+            }
+        }
+    });
+</script>
+
+<script>
+    $("#logo").fileinput({
+        allowedFileExtensions: ["png", "jpg", "jpeg"],
+        showCaption: false,
+        dropZoneEnabled: true,
+        showClose: false,
+        browseLabel: "Seleccionar",
+        removeLabel: "Eliminar",
+        uploadLabel: "Subir",
+        dropZoneTitle: "Arrastra y suelta los archivos aquí …"
+    });
+
+    $("#archivo").fileinput({
+        language: "es",
+        allowedFileExtensions: ["png", "jpg", "jpeg", "pdf"],
+        showCaption: false,
+        dropZoneEnabled: true,
+        showClose: false,
+        browseLabel: "Seleccionar",
+        removeLabel: "Eliminar",
+        uploadLabel: "Subir",
+        dropZoneTitle: "Arrastra y suelta los archivos aquí …"
+    });
+</script>
+
+{% endblock %}

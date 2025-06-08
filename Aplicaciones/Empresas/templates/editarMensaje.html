@@ -1,0 +1,95 @@
+{% extends './plantilla.html' %}
+{% block contenido %}
+
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6 bg-light">
+        <h1>Editar Mensaje</h1>
+        <form action="/procesarEdicionMensaje/" id="frm_editar_mensaje" method="post" enctype="multipart/form-data"> 
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{ mensajeEditar.id }}">
+
+            <label for="destinatario">Correo del Destinatario:</label><br>
+            <input class="form-control" type="email" name="destinatario" id="destinatario" value="{{ mensajeEditar.destinatario }}" required> 
+            <br><br>
+
+            <label for="asunto">Asunto:</label><br>
+            <textarea class="form-control" name="asunto" id="asunto" rows="2" required>{{ mensajeEditar.asunto }}</textarea> 
+            <br><br>
+
+            <label for="mensaje">Mensaje:</label><br>
+            <textarea class="form-control" name="mensaje" id="mensaje" rows="5" required>{{ mensajeEditar.mensaje }}</textarea> 
+            <br><br>
+
+            <label for="archivo">Archivo Adjunto:</label><br>
+            <input type="file" name="archivo" id="archivo" class="form-control" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"> <br>
+            {% if mensajeEditar.archivo %}
+                <a href="{{ mensajeEditar.archivo.url }}" target="_blank" class="btn btn-sm btn-success">Ver Archivo Actual</a>
+            {% else %}
+                Ninguno
+            {% endif %}
+            <br><br>
+
+            <button class="btn btn-warning" type="submit">
+                <i class="fa fa-pen"></i> Editar
+            </button>
+
+            <a class="btn btn-outline-danger" href="/listarMensajes/">
+                <i class="fa fa-times"></i> Cancelar
+            </a>
+        </form>
+        <br>
+    </div>
+    <div class="col-md-3"></div>
+</div>
+
+
+<script>
+    $("#frm_editar_mensaje").validate({
+        rules: {
+            destinatario: {
+                required: true,
+                email: true
+            },
+            asunto: {
+                required: true,
+                maxlength: 50
+            },
+            mensaje: {
+                required: true,
+                maxlength: 250
+            }
+        },
+        messages: {
+            destinatario: {
+                required: "El correo es obligatorio",
+                email: "Debe ser un correo válido"
+            },
+            asunto: {
+                required: "Ingrese un asunto",
+                maxlength: "Máximo 50 caracteres"
+            },
+            mensaje: {
+                required: "Ingrese el mensaje",
+                maxlength: "Máximo 250 caracteres"
+            }
+        },
+    });
+</script>
+
+
+<script>
+    $("#archivo").fileinput({
+        language: "es",
+        allowedFileExtensions: ["png", "jpg", "jpeg", "pdf"],
+        showCaption: false,
+        dropZoneEnabled: true,
+        showClose: false,
+        browseLabel: "Seleccionar",
+        removeLabel: "Eliminar",
+        uploadLabel: "Subir",
+        dropZoneTitle: "Arrastra y suelta los archivos aquí …"
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,171 @@
+{% extends './plantilla.html' %}
+
+{% block contenido %}
+<br>
+<h1 class="text-center">Mensajes Registrados</h1>
+<hr>
+
+<div class="row">
+    <!-- Tabla de mensajes -->
+    <div class="col-md-8">
+        <table class="table table-bordered table-striped" id="tbl_mensajes">
+            <thead class="table-primary text-center">
+                <tr>
+                    <th>ID</th>
+                    <th>Destinatario</th>
+                    <th>Asunto</th>
+                    <th>Mensaje</th>
+                    <th>Archivo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mensaje in mensajes %}
+                <tr>
+                    <td>{{ mensaje.id }}</td>
+                    <td>{{ mensaje.destinatario }}</td>
+                    <td>{{ mensaje.asunto }}</td>
+                    <td>{{ mensaje.mensaje|linebreaksbr }}</td>
+                    <td>
+                        {% if mensaje.archivo %}
+                            <a href="{{ mensaje.archivo.url }}" target="_blank">Ver</a>
+                            <a href="{{ mensaje.archivo.url }}" download class="btn btn-sm btn-outline-secondary">Descargar</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <a href="/editarMensaje/{{ mensaje.id }}/" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="#" data-id="{{ mensaje.id }}" class="btn btn-sm btn-danger btnEliminar">Eliminar</a>
+                        <a href="/enviarMensaje/{{ mensaje.id }}/" class="btn btn-sm btn-primary">Enviar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No hay mensajes registrados</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- Formulario para nuevo mensaje -->
+    <div class="col-md-4">
+        <h5>Nuevo Mensaje</h5>
+        <form id="frm_nuevo_mensaje" method="post" enctype="multipart/form-data" action="/guardarMensaje/">
+            {% csrf_token %}
+
+            <div class="mb-2">
+                <label>Correo del Destinatario</label>
+                <input placeholder="Ingrese el correo electrónico" type="email" name="destinatario" id="destinatario" class="form-control" required>
+            </div>
+
+            <div class="mb-2">
+                <label>Asunto</label>
+                <textarea placeholder="Ingrese el asunto del mensaje" name="asunto" id="asunto" class="form-control" required></textarea>
+            </div>
+
+            <div class="mb-2">
+                <label>Mensaje</label>
+                <textarea placeholder="Escriba el contenido del mensaje" name="mensaje" class="form-control" id="mensaje" required></textarea>
+            </div>
+
+            <div class="mb-2">
+                <label>Archivo Adjunto</label>
+                <input type="file" name="archivo" id="archivo" class="form-control" type="file" accept=".pdf,.doc,.docx,.jpg,.png,.jpeg"> 
+            </div>
+
+            <button type="submit" class="btn btn-success w-100" >Guardar</button><br><br>
+        </form>
+    </div>
+</div>
+
+<script>
+    $("#frm_nuevo_mensaje").validate({
+        rules: {
+            destinatario: {
+                required: true,
+                email: true
+            },
+            asunto: {
+                required: true,
+                maxlength: 50
+            },
+            mensaje: {
+                required: true,
+                maxlength: 250
+            },
+            archivo: {
+                required: false,
+            }
+        },
+        messages: {
+            destinatario: {
+                required: "El correo es obligatorio",
+                email: "Debe ser un correo válido"
+            },
+            asunto: {
+                required: "Ingrese un asunto",
+                maxlength: "Máximo 50 caracteres"
+            },
+            mensaje: {
+                required: "Ingrese el mensaje",
+                maxlength: "Máximo 250 caracteres"
+            },
+            archivo:{
+                required: "Ingrese el archivo",
+            },
+        },
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const botonesEliminar = document.querySelectorAll('.btnEliminar');
+
+        botonesEliminar.forEach(boton => {
+            boton.addEventListener('click', function (e) {
+                e.preventDefault();
+                const id = this.getAttribute('data-id');
+
+                Swal.fire({
+                    title: "¿Estás seguro?",
+                    text: "¡No podrás revertir esto!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Sí, eliminar"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "/eliminarMensaje/" + id + "/";
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+<script>
+    const table = new DataTable('#tbl_mensajes');
+    layout: {
+      topStart: {
+        buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+      }
+    };
+
+    $("#archivo").fileinput({
+        language: "es",
+        allowedFileExtensions: ["png", "jpg", "jpeg", "pdf"],
+        showCaption: false,
+        dropZoneEnabled: true,
+        showClose: false,
+        browseLabel: "Seleccionar",
+        removeLabel: "Eliminar",
+        uploadLabel: "Subir",
+        dropZoneTitle: "Arrastra y suelta los archivos aquí …"
+    });
+</script>
+
+{% endblock %}

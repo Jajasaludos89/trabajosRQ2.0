@@ -1,0 +1,132 @@
+{% extends './plantilla.html' %}
+{% block contenido %}
+
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6 bg-light">
+        <h1>Nuevo Cargo</h1>
+        <form action="/guardarCargo/" id="frm_nuevo_cargo" enctype="multipart/form-data" method="post">
+            {% csrf_token %}
+            <label for="">Nombre:</label><br>
+            <input placeholder="Ingrese el nombre de Cargo" class="form-control" type="text" name="nombre" id="nombre"> <br> <br>
+            <label for="">Funciones:</label><br>
+            <input placeholder="Ingrese el nombre de la Funcion" class="form-control" type="text" name="funciones" id="funciones"> <br> <br>
+            <label for="">Horario:</label><br>
+            <input placeholder="Ingrese el Horario" class="form-control" type="text" name="horario" id="horario"> <br> <br>
+            <label for="">Requisitos:</label> <br>
+            <textarea placeholder="Ingrese los Requisitos necesarios" class="form-control" name="requisitos" id="requisitos" rows="5"></textarea> <br> <br>
+            <label for="">Sueldo:</label><br>
+            <input placeholder="Ingrese el valor del sueldo" class="form-control" type="text" name="sueldo" id="sueldo"> <br> <br>
+            
+            <label for="">Logotipo</label>
+            <input type="file" name="logo" id="logo" class="form-control"> <br>
+            <label for="">Curriculum</label>
+            <input type="file" name="archivo" id="archivo" class="form-control" accept=".pdf"> <br>
+
+            <button
+            class="btn btn-success"
+            type="submit">Guardar</button>
+            <a 
+            class="btn btn-outline-danger"
+            href="/">Cancelar</a>
+        </form>
+        <br>
+    </div>
+    <div class="col-md-3"></div>
+</div>
+
+
+<!-- Embeber codigo javascript/jquery dentro del HTML -->
+
+<script>
+    $("#frm_nuevo_cargo").validate({
+        rules:{
+            "nombre":{
+                required:true,
+                minlength:5, // cuenta caracteres
+                maxlength:20 // cuenta caracteres
+            },
+            "funciones":{
+                required:true
+            },
+            "horario":{
+                required:true
+            },
+            "requisitos":{
+                required:true
+            },
+            "sueldo":{
+                required:true,
+                number:true,
+                min: 200, //entidades numericas
+                max: 5000
+
+            },
+            "archivo": {
+                required: true,
+                extension: ".pdf"
+            }
+
+        },
+        messages:{
+            "nombre":{
+                required:"Este campo es obligatorio",
+                minlength:"Ingrese 5 letras",
+                maxlength:"Ingrese menos de 5 letras"
+            },
+            "funciones":{
+                required:"Este campo es obligatorio"
+            },
+            "horario":{
+                required:"Este campo es obligatorio"
+            },
+            "requisitos":{
+                required:"Este campo es obligatorio"
+            },
+            "sueldo":{
+                required:"Este campo es obligatorio",
+                number:"Este campo es obligatorio",
+                min: "Ingresar minimo mas de 200 $",
+                max: "Ingresar maximo 5000 $"
+
+            },
+            "archivo": {
+                required: "Debe subir un archivo PDF",
+                extension: "Solo se permite archivo .pdf"
+            }
+
+        }
+    });
+</script>
+
+<script>
+    $("#logo").fileinput({
+            //language: "es",
+            allowedFileExtensions: ["png|jpg|jpeg"],
+            showCaption: false,
+            dropZoneEnabled: true,
+            showClose: false,
+            browseLabel: "Seleccionar",
+            removeLabel: "Eliminar",
+            uploadLabel: "Subir",
+            dropZoneTitle: "Arrastra y suelta los archivos aquí …"
+    });
+
+</script>
+
+<script>
+    $("#archivo").fileinput({
+        language: "es",
+        allowedFileExtensions: ["png", "jpg", "jpeg", "pdf"],
+        showCaption: false,
+        dropZoneEnabled: true,
+        showClose: false,
+        browseLabel: "Seleccionar",
+        removeLabel: "Eliminar",
+        uploadLabel: "Subir",
+        dropZoneTitle: "Arrastra y suelta los archivos aquí …"
+    });
+</script>
+
+{% endblock %}
+
