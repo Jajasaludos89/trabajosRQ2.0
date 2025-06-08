@@ -1,6 +1,5 @@
-from django.db import models # type: ignore
+from django.db import models
 
-# Create your models here.
 class Cargo(models.Model):
     id=models.AutoField(primary_key=True)
     nombre=models.CharField(max_length=100)
@@ -17,8 +16,6 @@ class Cargo(models.Model):
         fila="{0}: {1} {2} {3}"
         return fila.format(self.id,self.nombre,self.sueldo,self.horario)
     
-from django.db import models
-
 class Mensaje(models.Model):
     id = models.AutoField(primary_key=True)
     destinatario = models.EmailField()
